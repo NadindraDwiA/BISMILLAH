@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">BISMILLAH</string>
+    <string name="translator_status_idle">Belum aktif</string>
+    <string name="translator_status_stopped">Bubble dimatikan</string>
+    <string name="setup_title">Penyiapan awal</string>
+    <string name="setup_skip">Lewati dulu, masuk aplikasi</string>
+    <string name="model_title">Kelola Model</string>
+    <string name="home_modules">Modul Utama</string>
+    <string name="home_features">Fitur</string>
+    <string name="status_ready">Siap</string>
+    <string name="status_permission">Izin</string>
+    <string name="status_model">Model</string>
+    <string name="status_soon">Segera</string>
+</resources>
