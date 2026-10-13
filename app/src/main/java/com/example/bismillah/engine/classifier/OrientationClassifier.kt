@@ -19,16 +19,17 @@ class OrientationClassifier(private val context: Context? = null) {
         return box.ratioHW > 1.35f
     }
 
-    /** Opsional: jalankan ch_ppocr_mobile_cls.onnx pada crop untuk 0/180. Return true jika 180. */
+    /** Opsional: jalankan PPLCNet_textline_ori pada crop untuk 0/180. Return true jika 180. */
     fun classifyUpsideDown(crop: Bitmap): Boolean {
         try {
             val ctx = context ?: return false
             val env: OrtEnvironment =
                 (ctx.applicationContext as? App)?.ortEnv ?: return false
-            val modelFile = ModelDownloader.paddleFiles(ctx).getOrNull(2)?.takeIf { it.exists() }
+            val modelFile = ModelDownloader.lineOriCandidates(ctx).firstOrNull { it.exists() }
                 ?: return false
             env.createSession(modelFile.absolutePath, OrtSession.SessionOptions()).use { session ->
-                val resized = Bitmap.createScaledBitmap(crop, 48, 48, true)
+                // yml textline_ori: ResizeImage 160x80 + NormalizeImage.
+                val resized = Bitmap.createScaledBitmap(crop, 160, 80, true)
                 return try {
                     val (buf, shape) = preprocessor.toChwFloat(resized)
                     OnnxTensor.createTensor(env, buf, shape).use { input ->

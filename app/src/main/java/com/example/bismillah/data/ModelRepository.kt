@@ -15,7 +15,7 @@ class ModelRepository(private val appContext: Context) {
 
     fun paddleStatus(): PaddleStatus {
         val files = ModelDownloader.paddleFiles(appContext)
-        val names = listOf("det.onnx", "rec.onnx", "cls.onnx")
+        val names = listOf("ppocrv5_det.onnx", "ppocrv5_rec.onnx")
         return PaddleStatus(
             ready = ModelDownloader.hasPaddle(appContext),
             files = files.mapIndexed { i, f -> names[i] to (f.exists() && f.length() > 0) },

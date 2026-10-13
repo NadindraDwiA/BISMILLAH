@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.AutoAwesome
+import androidx.compose.material.icons.rounded.CameraAlt
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.DownloadForOffline
 import androidx.compose.material.icons.rounded.History
@@ -215,6 +216,7 @@ private fun FeatureCardItem(
 
     val style = when (feature.id) {
         "screen_translator" -> FeatureStyle(Icons.Rounded.Translate, MaterialTheme.colorScheme.primary)
+        "photo_ocr" -> FeatureStyle(Icons.Rounded.CameraAlt, MaterialTheme.colorScheme.secondary)
         "model_manager" -> FeatureStyle(Icons.Rounded.Memory, MaterialTheme.colorScheme.secondary)
         "history" -> FeatureStyle(Icons.Rounded.History, MaterialTheme.colorScheme.tertiary)
         "settings" -> FeatureStyle(Icons.Rounded.Settings, MaterialTheme.colorScheme.onSurfaceVariant)

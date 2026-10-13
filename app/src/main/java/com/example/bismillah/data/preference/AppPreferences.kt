@@ -35,7 +35,7 @@ object AppPreferences {
 
     data class Settings(
         val recognitionLang: String = REC_AUTO,
-        val targetLang: String = TGT_ID,
+        val targetLang: String = TGT_EN,
         val autoFontSize: Boolean = true,
         val minTextSp: Int = DEFAULT_MIN_SP,
         val idleAlpha: Float = 0.55f
@@ -45,7 +45,7 @@ object AppPreferences {
         ctx.applicationContext.settingsStore.data.map {
             Settings(
                 recognitionLang = it[REC_LANG] ?: REC_AUTO,
-                targetLang = it[TGT_LANG] ?: TGT_ID,
+                targetLang = it[TGT_LANG] ?: TGT_EN,
                 autoFontSize = it[AUTO_FONT] ?: true,
                 minTextSp = it[MIN_TEXT_SP] ?: DEFAULT_MIN_SP,
                 idleAlpha = it[IDLE_ALPHA] ?: 0.55f

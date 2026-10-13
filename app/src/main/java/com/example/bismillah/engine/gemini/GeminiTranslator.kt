@@ -18,8 +18,8 @@ import javax.net.ssl.HttpsURLConnection
 class GeminiTranslator {
     companion object {
         const val MODEL = "gemini-2.5-flash"
-        /** Fallback bila model utama 404 di API version/key tersebut. */
-        private val MODEL_FALLBACKS = listOf("gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash")
+        /** Fallback sesuai daftar model key tersebut (2.0/1.5 tidak terdaftar). */
+        private val MODEL_FALLBACKS = listOf("gemini-2.5-flash", "gemini-flash-latest", "gemini-2.5-flash-lite")
         private const val ENDPOINT_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
     }
 

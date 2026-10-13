@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Temp foto kamera untuk OCR (cache, tidak di-backup). -->
+    <cache-path name="camera" path="camera/" />
+    <!-- PDF hasil Scan untuk dibagikan. -->
+    <cache-path name="pdf" path="pdf/" />
+</paths>

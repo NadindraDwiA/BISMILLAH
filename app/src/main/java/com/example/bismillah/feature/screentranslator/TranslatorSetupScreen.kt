@@ -47,9 +47,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,21 +57,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bismillah.R
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
-import com.example.bismillah.data.preference.AppPreferences
 import com.example.bismillah.service.MediaProjectionHolder
 import com.example.bismillah.service.ScreenTranslatorService
 import com.example.bismillah.util.PermissionUtils
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TranslatorSetupScreen(onOpenSettings: () -> Unit) {
     val ctx = LocalContext.current
@@ -82,15 +69,13 @@ fun TranslatorSetupScreen(onOpenSettings: () -> Unit) {
     val vm: TranslatorViewModel = viewModel(factory = TranslatorViewModel.Factory(app))
     val status by vm.status.collectAsState()
     val activity = ctx as? Activity
-    val scope = rememberCoroutineScope()
 
-    var recLang by remember { mutableStateOf(AppPreferences.REC_AUTO) }
-    var tgtLang by remember { mutableStateOf(AppPreferences.TGT_ID) }
+    // Health-check: bila bubble aktif tapi view-nya lepas, pulihkan otomatis.
     LaunchedEffect(Unit) {
         try {
-            val s = AppPreferences.observe(ctx.applicationContext).first()
-            recLang = s.recognitionLang
-            tgtLang = s.targetLang
+            if (com.example.bismillah.ui.bubble.BubbleSession.active) {
+                com.example.bismillah.ui.bubble.BubbleSession.ensureVisible()
+            }
         } catch (_: Exception) {}
     }
 
@@ -235,47 +220,6 @@ fun TranslatorSetupScreen(onOpenSettings: () -> Unit) {
             }
         }
 
-        // V4 Common Settings: recognition + target language
-        val recOptions = listOf(
-            AppPreferences.REC_AUTO to "Auto-Detect (ML Kit)",
-            AppPreferences.REC_JA to "Japanese",
-            AppPreferences.REC_ZH_HANS to "Chinese (Simplified)",
-            AppPreferences.REC_ZH_HANT to "Chinese (Traditional)",
-            AppPreferences.REC_KO to "Korean"
-        )
-        val tgtOptions = listOf(
-            AppPreferences.TGT_ID to "Indonesian (ind_Latn)",
-            AppPreferences.TGT_EN to "English (eng_Latn)"
-        )
-        SetupStepCard(
-            stepNumber = "3",
-            title = "Bahasa Sumber & Target",
-            description = "Auto memakai ML Kit (<5ms). Target Indonesia default; Inggris bila model mendukung.",
-            isComplete = true,
-            icon = Icons.Rounded.Translate
-        ) {
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                LangDropdown(
-                    label = "Recognition Language",
-                    options = recOptions,
-                    selected = recLang,
-                    onSelect = {
-                        recLang = it
-                        scope.launch { AppPreferences.setRecognitionLang(ctx.applicationContext, it) }
-                    }
-                )
-                LangDropdown(
-                    label = "Target Language",
-                    options = tgtOptions,
-                    selected = tgtLang,
-                    onSelect = {
-                        tgtLang = it
-                        scope.launch { AppPreferences.setTargetLang(ctx.applicationContext, it) }
-                    }
-                )
-            }
-        }
-
         // How to Use Guide Card
         GuideCard()
 
@@ -414,39 +358,6 @@ private fun SetupStepCard(
             )
 
             content()
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun LangDropdown(
-    label: String,
-    options: List<Pair<String, String>>,
-    selected: String,
-    onSelect: (String) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-    val current = options.firstOrNull { it.first == selected }?.second ?: selected
-    ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = !expanded }) {
-        OutlinedTextField(
-            value = current,
-            onValueChange = {},
-            readOnly = true,
-            label = { Text(label) },
-            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .menuAnchor(),
-            shape = RoundedCornerShape(12.dp)
-        )
-        ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            options.forEach { (code, name) ->
-                DropdownMenuItem(
-                    text = { Text(name) },
-                    onClick = { onSelect(code); expanded = false }
-                )
-            }
         }
     }
 }

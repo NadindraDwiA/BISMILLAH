@@ -5,6 +5,7 @@ object Routes {
     const val SETUP = "setup"
     const val HOME = "home"
     const val TRANSLATOR_SETUP = "translator_setup"
+    const val SCAN = "scan"
     const val MODEL_MANAGER = "model_manager"
     const val SETTINGS = "settings"
 }

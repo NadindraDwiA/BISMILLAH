@@ -199,6 +199,11 @@ class FloatingBubbleManager(
         bubbleView?.isProcessing() == true
     } catch (_: Exception) { false }
 
+    /** True bila view masih menempel di WindowManager. */
+    fun isAttached(): Boolean = try {
+        bubbleView?.isAttachedToWindow == true
+    } catch (_: Exception) { false }
+
     fun showSuccess() {
         val view = bubbleView ?: return
         try {
@@ -390,6 +395,15 @@ private class CustomBubbleView(context: Context) : View(context) {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        try {
+            drawContent(canvas)
+        } catch (e: Exception) {
+            // Render gagal tidak boleh mencabut window bubble.
+            android.util.Log.e("ScreenTranslator", "bubble onDraw failed", e)
+        }
+    }
+
+    private fun drawContent(canvas: Canvas) {
         val cx = width / 2f
         val cy = height / 2f
         val radius = (minOf(width, height) / 2f) - 12f

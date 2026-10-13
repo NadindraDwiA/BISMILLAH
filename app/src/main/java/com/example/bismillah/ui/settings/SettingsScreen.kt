@@ -350,7 +350,7 @@ fun SettingsScreen(onOpenModels: () -> Unit = {}) {
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
-                            text = "Bahasa Target: Indonesia (ind_Latn)",
+                            text = "Bahasa Target: English (eng_Latn)",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

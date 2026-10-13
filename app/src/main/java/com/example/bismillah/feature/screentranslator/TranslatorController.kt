@@ -94,6 +94,7 @@ class TranslatorController(private val context: Context) {
             return
         }
         running = true
+        BubbleSession.ensureVisible()
         BubbleSession.setLoading(true)
         android.util.Log.d("ScreenTranslator", "runOnce started")
         scope.launch {
@@ -176,6 +177,8 @@ class TranslatorController(private val context: Context) {
             } finally {
                 BubbleSession.setVisible(true)
                 BubbleSession.setLoading(false)
+                val recovered = BubbleSession.ensureVisible()
+                android.util.Log.d("ScreenTranslator", "runOnce finished, bubble visible=$recovered")
                 running = false
             }
         }

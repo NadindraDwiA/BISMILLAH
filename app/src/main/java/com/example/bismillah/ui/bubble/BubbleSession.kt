@@ -12,6 +12,7 @@ import android.content.Context
 object BubbleSession {
     private var manager: FloatingBubbleManager? = null
     private var gestures: BubbleGestures? = null
+    private var lastContext: Context? = null
 
     @Volatile
     var active: Boolean = false
@@ -20,6 +21,7 @@ object BubbleSession {
     @Synchronized
     fun start(context: Context, gestures: BubbleGestures): Boolean {
         this.gestures = gestures
+        lastContext = context.applicationContext
         val m = manager ?: FloatingBubbleManager(context.applicationContext) {
             gestures()
         }.also { manager = it }
@@ -28,6 +30,7 @@ object BubbleSession {
             false
         }
         active = ok
+        android.util.Log.d("ScreenTranslator", "bubble start ok=$ok attached=${m.isAttached()}")
         return ok
     }
 
@@ -52,6 +55,44 @@ object BubbleSession {
 
     @Synchronized
     fun isShowing(): Boolean = manager?.visible == true
+
+    /**
+     * Health-check + auto-recover: bila view lepas dari window (mis. dicabut
+     * sistem), buat ulang otomatis dari gestures terakhir. Kembalikan true
+     * bila bubble tampil setelah panggilan ini.
+     */
+    @Synchronized
+    fun ensureVisible(): Boolean {
+        val m = manager
+        val attached = m?.isAttached() == true
+        android.util.Log.d(
+            "ScreenTranslator",
+            "bubble ensureVisible active=$active attached=$attached showing=${m?.visible}"
+        )
+        if (m != null && attached) {
+            if (m.visible != true) m.setVisible(true)
+            active = true
+            return true
+        }
+        // View lepas / manager hilang → recreate sekali.
+        val ctx = lastContext
+        val g = gestures
+        if (ctx == null || g == null) {
+            active = false
+            return false
+        }
+        try { m?.dismiss() } catch (_: Exception) {}
+        manager = null
+        val fresh = FloatingBubbleManager(ctx) { gestures() }
+        manager = fresh
+        val ok = try { fresh.show() } catch (e: Exception) {
+            android.util.Log.e("ScreenTranslator", "bubble recover failed", e)
+            false
+        }
+        active = ok
+        android.util.Log.d("ScreenTranslator", "bubble recovered ok=$ok")
+        return ok
+    }
 
     @Synchronized
     fun stop() {

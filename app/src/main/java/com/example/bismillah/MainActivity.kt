@@ -10,8 +10,10 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.DocumentScanner
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Translate
+import androidx.compose.material.icons.rounded.DocumentScanner
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Translate
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -37,6 +39,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.bismillah.core.navigation.FeatureRegistry
 import com.example.bismillah.core.navigation.Routes
+import com.example.bismillah.feature.ocrphoto.PhotoOcrScreen
 import com.example.bismillah.feature.screentranslator.TranslatorSetupScreen
 import com.example.bismillah.ui.home.HomeScreen
 import com.example.bismillah.ui.model.ModelManagerScreen
@@ -51,7 +54,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        // Deep-link dari radial menu (long-press > Setup): langsung ke Pengaturan.
         val deepRoute = intent?.getStringExtra("route")?.takeIf { it == Routes.SETTINGS }
         setContent {
             BISMILLAHTheme {
@@ -88,6 +90,12 @@ fun BismillahAppMainScreen(startRoute: String? = null) {
             title = "Translator",
             selectedIcon = Icons.Rounded.Translate,
             unselectedIcon = Icons.Outlined.Translate
+        ),
+        NavTabItem(
+            route = Routes.SCAN,
+            title = "Scanner",
+            selectedIcon = Icons.Rounded.DocumentScanner,
+            unselectedIcon = Icons.Outlined.DocumentScanner
         )
     )
 
@@ -104,6 +112,7 @@ fun BismillahAppMainScreen(startRoute: String? = null) {
                             text = when (currentRoute) {
                                 Routes.HOME -> "BISMILLAH AI"
                                 Routes.TRANSLATOR_SETUP -> "Screen Translator"
+                                Routes.SCAN -> "Scanner"
                                 Routes.MODEL_MANAGER -> "Kelola Model AI"
                                 Routes.SETTINGS -> "Pengaturan & Izin"
                                 else -> "BISMILLAH"
@@ -203,6 +212,7 @@ fun BismillahAppMainScreen(startRoute: String? = null) {
             composable(Routes.TRANSLATOR_SETUP) {
                 TranslatorSetupScreen(onOpenSettings = { navController.navigate(Routes.SETTINGS) })
             }
+            composable(Routes.SCAN) { PhotoOcrScreen() }
             composable(Routes.MODEL_MANAGER) { ModelManagerScreen() }
             composable(Routes.SETTINGS) {
                 SettingsScreen(onOpenModels = { navController.navigate(Routes.MODEL_MANAGER) })
